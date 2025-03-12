@@ -18,8 +18,8 @@ public class Player extends Entity {
     KeyHandler KeyH;
     int hasKey = 0;
 
-    public final int screenX; 
-    public final int screenY; 
+    public int screenX; 
+    public int screenY; 
 
     public Player(GamePanel gp, KeyHandler keyH){
 
@@ -125,55 +125,29 @@ public class Player extends Entity {
         }
 
     }
+    public void draw(Graphics2D g2) {
+    BufferedImage image = null;
 
-    public void draw(Graphics2D g2){
-    
-       // g2.setColor(Color.white);
-                     // player position     width  height
-        //g2.fillRect(x, y, gp.tileSize, gp.tileSize);
-    
-        BufferedImage image = null;
-
-        switch(direction){
+    switch(direction) {
         case "up":
-            if(spriteNum == 1){
-                image = up1;
-            }
-            if(spriteNum == 2){
-                image = up2;
-                }
-                break;
+            image = (spriteNum == 1) ? up1 : up2;
+            break;
         case "down":
-            if(spriteNum == 1){
-                image = down1;
-                
-            }
-            if(spriteNum == 2){
-                image = down2;
-                
-            }
+            image = (spriteNum == 1) ? down1 : down2;
             break;
         case "left":
-            if(spriteNum == 1){
-                image = left1; 
-                
-            }
-            if(spriteNum == 2){
-                image = left2;
-            }
+            image = (spriteNum == 1) ? left1 : left2;
             break;
         case "right":
-            if(spriteNum == 1){
-                image = right1; 
-                
-            }
-            if(spriteNum == 2){
-                image = right2;
-            }
+            image = (spriteNum == 1) ? right1 : right2;
             break;
-        }
-        g2.drawImage(image,screenX, screenY, gp.tileSize, gp.tileSize, null);
     }
+
+    int screenX = worldx - gp.cameraOffsetX;
+    int screenY = worldy - gp.cameraOffsetY;
+
+    g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
+}
 
 
     

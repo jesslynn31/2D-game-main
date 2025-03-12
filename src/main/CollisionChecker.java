@@ -13,30 +13,33 @@ public class CollisionChecker {
 
 
     }
-
-
-    public void checkTile(Entity NPC){
-
-        int entityLeftWorldX = NPC.worldx + NPC.solidArea.x; 
-        int entityRightWorldX = NPC.worldx + NPC.solidArea.x + NPC.solidArea.width;
-        int entityTopWorldY = NPC.worldy + NPC.solidArea.y;
-        int entityBottomWorldY = NPC.worldy + NPC.solidArea.y + NPC.solidArea.height;
-
-        int entityLeftCol = entityLeftWorldX / gp.tileSize;
-        int entityRightCol = entityRightWorldX / gp.tileSize;
-        int entityTopRow = entityTopWorldY / gp.tileSize;
-        int entityBottomRow = entityBottomWorldY / gp.tileSize;
-
-        int tileNum1;
-        int tileNum2;
+   
+        public void checkTile(Entity NPC) {
+            
+            int entityLeftWorldX = NPC.worldx + NPC.solidArea.x;
+            int entityRightWorldX = NPC.worldx + NPC.solidArea.x + NPC.solidArea.width;
+            int entityTopWorldY = NPC.worldy + NPC.solidArea.y;
+            int entityBottomWorldY = NPC.worldy + NPC.solidArea.y + NPC.solidArea.height;
+        
+            int entityLeftCol = entityLeftWorldX / gp.tileSize;
+            int entityRightCol = entityRightWorldX / gp.tileSize;
+            int entityTopRow = entityTopWorldY / gp.tileSize;
+            int entityBottomRow = entityBottomWorldY / gp.tileSize;
     
-
-        switch(NPC.direction){
+        int tileNum1, tileNum2;
+    
+        entityLeftCol = Math.max(0, Math.min(entityLeftCol, gp.maxWorldCol - 1));
+        entityRightCol = Math.max(0, Math.min(entityRightCol, gp.maxWorldCol - 1));
+        entityTopRow = Math.max(0, Math.min(entityTopRow, gp.maxWorldRow - 1));
+        entityBottomRow = Math.max(0, Math.min(entityBottomRow, gp.maxWorldRow - 1));
+    
+        
+        switch (NPC.direction) {
             case "up":
-                entityTopRow = (entityTopWorldY - NPC.speed)  / gp.tileSize;
+                entityTopRow = (entityTopWorldY - NPC.speed) / gp.tileSize;
                 tileNum1 = gp.tileM.mapTileNum[entityLeftCol][entityTopRow];
                 tileNum2 = gp.tileM.mapTileNum[entityRightCol][entityTopRow];
-                if(gp.tileM.tile[tileNum1].collision == true || gp.tileM.tile[tileNum2].collision == true){
+                if (gp.tileM.tile[tileNum1].collision || gp.tileM.tile[tileNum2].collision) {
                     NPC.CollisionOn = true;
                 }
                 break;
@@ -44,7 +47,7 @@ public class CollisionChecker {
                 entityBottomRow = (entityBottomWorldY + NPC.speed) / gp.tileSize;
                 tileNum1 = gp.tileM.mapTileNum[entityLeftCol][entityBottomRow];
                 tileNum2 = gp.tileM.mapTileNum[entityRightCol][entityBottomRow];
-                if(gp.tileM.tile[tileNum1].collision == true || gp.tileM.tile[tileNum2].collision == true){
+                if (gp.tileM.tile[tileNum1].collision || gp.tileM.tile[tileNum2].collision) {
                     NPC.CollisionOn = true;
                 }
                 break;
@@ -52,7 +55,7 @@ public class CollisionChecker {
                 entityLeftCol = (entityLeftWorldX - NPC.speed) / gp.tileSize;
                 tileNum1 = gp.tileM.mapTileNum[entityLeftCol][entityTopRow];
                 tileNum2 = gp.tileM.mapTileNum[entityLeftCol][entityBottomRow];
-                if(gp.tileM.tile[tileNum1].collision == true || gp.tileM.tile[tileNum2].collision == true){
+                if (gp.tileM.tile[tileNum1].collision || gp.tileM.tile[tileNum2].collision) {
                     NPC.CollisionOn = true;
                 }
                 break;
@@ -60,13 +63,12 @@ public class CollisionChecker {
                 entityRightCol = (entityRightWorldX + NPC.speed) / gp.tileSize;
                 tileNum1 = gp.tileM.mapTileNum[entityRightCol][entityTopRow];
                 tileNum2 = gp.tileM.mapTileNum[entityRightCol][entityBottomRow];
-                if(gp.tileM.tile[tileNum1].collision == true || gp.tileM.tile[tileNum2].collision == true){
+                if (gp.tileM.tile[tileNum1].collision || gp.tileM.tile[tileNum2].collision) {
                     NPC.CollisionOn = true;
                 }
                 break;
+            }
         }
-
-    }
     
 
 

@@ -13,16 +13,19 @@ import javax.imageio.ImageIO;
 import java.awt.Graphics2D;
 
 import main.GamePanel;
+import main.KeyHandler;
 
 public class TileManager {
 
     GamePanel gp;
+    KeyHandler keyH;
     public Tile[] tile;
     public int mapTileNum[][];
 
  public TileManager(GamePanel gp){
-    
-    this.gp = gp;
+     
+     this.gp = gp;
+     this.keyH = gp.keyH;
 
     tile = new Tile[10];
     mapTileNum = new int[gp.maxWorldCol][gp.maxWorldRow];
@@ -68,39 +71,87 @@ public void getTileImage(){
 
         }   
 
-
-public void draw(Graphics2D g2){
-
-    int worldCol = 0;
-    int worldRow = 0;
+        public void draw(Graphics2D g2) {
+            int worldCol = 0;
+            int worldRow = 0;
+        
+            boolean followPlayer = gp.keyH.followPlayer; 
+        
+            int offsetX, offsetY;
+        
+            if (followPlayer) {
+                offsetX = gp.player.worldx - (gp.screenWidth / 2);
+                offsetY = gp.player.worldy - (gp.screenHeight / 2);
+            } else {
     
-    while(worldCol < gp.maxWorldCol && worldRow < gp.maxWorldRow){
-        int tileNum = mapTileNum[worldCol][worldRow];
-
-        int worldX = worldCol * gp.tileSize;
-        int worldY = worldRow * gp.tileSize;
-        int screenX = worldX - gp.player.worldx + gp.player.screenX;
-        int screenY = worldY - gp.player.worldy + gp.player.screenY;
-
-        if(worldX + gp.tileSize > gp.player.worldx - gp.player.screenX && 
-        worldX - gp.tileSize< gp.player.worldx + gp.player.screenX &&
-        worldY + gp.tileSize > gp.player.worldy - gp.player.screenY 
-        && worldY - gp.tileSize < gp.player.worldy + gp.player.screenY) {
-            g2.drawImage(tile[tileNum].image, screenX, screenY, gp.tileSize, gp.tileSize, null);
-        } 
+                int edgeThreshold = 100; 
+                offsetX = gp.cameraOffsetX; 
+                offsetY = gp.cameraOffsetY;
         
-        worldCol++;
+               
+                int playerScreenX = gp.player.worldx - offsetX;
+                if (playerScreenX < edgeThreshold) {
+                    offsetX = gp.player.worldx - edgeThreshold;
+                } else if (playerScreenX > gp.screenWidth - edgeThreshold) {
+                    offsetX = gp.player.worldx - (gp.screenWidth - edgeThreshold);
+                }
         
+          
+                int playerScreenY = gp.player.worldy - offsetY;
+                if (playerScreenY < edgeThreshold) {
+                    offsetY = gp.player.worldy - edgeThreshold;
+                } else if (playerScreenY > gp.screenHeight - edgeThreshold) {
+                    offsetY = gp.player.worldy - (gp.screenHeight - edgeThreshold);
+                }
+            }
+        
+           
+            offsetX = Math.max(0, Math.min(offsetX, gp.maxWorldCol * gp.tileSize - gp.screenWidth));
+            offsetY = Math.max(0, Math.min(offsetY, gp.maxWorldRow * gp.tileSize - gp.screenHeight));
+        
+            gp.cameraOffsetX = offsetX;
+            gp.cameraOffsetY = offsetY;
 
-        if(worldCol == gp.maxWorldCol){
-            worldCol = 0;
-            worldRow++;
-
+            while (worldCol < gp.maxWorldCol && worldRow < gp.maxWorldRow) {
+                int tileNum = mapTileNum[worldCol][worldRow];
+        
+                if (tileNum < 0 || tileNum >= tile.length || tile[tileNum] == null) {
+                    worldCol++;
+                    if (worldCol == gp.maxWorldCol) {
+                        worldCol = 0;
+                        worldRow++;
+                    }
+                    continue;
+                }
+        
+                int worldX = worldCol * gp.tileSize;
+                int worldY = worldRow * gp.tileSize;
+        
+                int screenX = worldX - offsetX;
+                int screenY = worldY - offsetY;
+        
+                if (screenX + gp.tileSize > 0 && screenX < gp.screenWidth &&
+                    screenY + gp.tileSize > 0 && screenY < gp.screenHeight) {
+        
+                    if (tile[tileNum].image == null) {
+                        System.out.println("Error: Tile image is broken for tile " + tileNum);
+                    } else {
+                        g2.drawImage(tile[tileNum].image, screenX, screenY, gp.tileSize, gp.tileSize, null);
+                    }
+                }
+        
+                worldCol++;
+        
+                if (worldCol == gp.maxWorldCol) {
+                    worldCol = 0;
+                    worldRow++;
+                }
+            }
         }
-
-    }
-
-}
+        
+        
+        
+        
 
 public void loadMap(String FilePath){
     File file = new File(FilePath);
